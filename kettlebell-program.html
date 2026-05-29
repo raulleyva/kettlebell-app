@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kettlebell Program</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0f0f;
+    --surface: #1a1a1a;
+    --surface2: #242424;
+    --border: #2e2e2e;
+    --accent: #e8ff00;
+    --accent2: #ff6b35;
+    --text: #f0f0f0;
+    --muted: #888;
+    --success: #4caf7d;
+    --danger: #ff4444;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  /* HEADER */
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 20px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 3px;
+    color: var(--accent);
+  }
+
+  .logo span { color: var(--text); }
+
+  .week-nav {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+  }
+
+  .week-nav button {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 6px 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    transition: all 0.15s;
+  }
+
+  .week-nav button:hover { background: var(--border); }
+
+  .week-label {
+    color: var(--accent);
+    font-size: 14px;
+    font-weight: 500;
+    min-width: 80px;
+    text-align: center;
+  }
+
+  /* LAYOUT */
+  .container { max-width: 1200px; margin: 0 auto; padding: 32px 24px; }
+
+  /* PROGRAM OVERVIEW */
+  .overview-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+    margin-bottom: 36px;
+  }
+
+  .day-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .day-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+
+  .day-card.strength::before { background: var(--accent); }
+  .day-card.emom::before { background: var(--accent2); }
+  .day-card.mobility::before { background: #7b9fff; }
+
+  .day-card:hover { border-color: #444; transform: translateY(-2px); }
+  .day-card.active { border-color: var(--accent); background: #1f1f00; }
+  .day-card.active.emom-active { border-color: var(--accent2); background: #1f0e00; }
+  .day-card.active.mobility-active { border-color: #7b9fff; background: #0e1220; }
+
+  .day-label {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+  }
+
+  .day-type {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .day-card.strength .day-type { color: var(--accent); }
+  .day-card.emom .day-type { color: var(--accent2); }
+  .day-card.mobility .day-type { color: #7b9fff; }
+
+  .day-focus {
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+
+  /* WORKOUT SECTION */
+  .workout-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .workout-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 42px;
+    letter-spacing: 2px;
+    line-height: 1;
+  }
+
+  .workout-title span { color: var(--accent); }
+  .workout-title.emom-title span { color: var(--accent2); }
+  .workout-title.mobility-title span { color: #7b9fff; }
+
+  .workout-meta {
+    display: flex;
+    gap: 20px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .workout-meta strong { color: var(--text); }
+
+  /* EMOM TIMER */
+  .emom-container {
+    background: #140c00;
+    border: 1px solid #3d2000;
+    border-radius: 12px;
+    padding: 28px;
+    margin-bottom: 28px;
+  }
+
+  .emom-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+
+  .emom-badge {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 14px;
+    letter-spacing: 3px;
+    background: var(--accent2);
+    color: #000;
+    padding: 4px 12px;
+    border-radius: 3px;
+  }
+
+  .emom-info {
+    font-size: 12px;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+  }
+
+  .timer-display {
+    text-align: center;
+    margin: 20px 0;
+  }
+
+  .timer-number {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 80px;
+    color: var(--accent2);
+    line-height: 1;
+    letter-spacing: 4px;
+  }
+
+  .timer-status {
+    font-size: 13px;
+    color: var(--muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-top: 4px;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .timer-progress {
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    margin: 12px 0;
+    overflow: hidden;
+  }
+
+  .timer-bar {
+    height: 100%;
+    background: var(--accent2);
+    border-radius: 2px;
+    transition: width 1s linear;
+    width: 100%;
+  }
+
+  .timer-controls {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 16px;
+  }
+
+  .btn-primary {
+    background: var(--accent2);
+    color: #000;
+    border: none;
+    padding: 10px 28px;
+    border-radius: 6px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .btn-primary:hover { opacity: 0.85; transform: scale(1.02); }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .btn-secondary:hover { color: var(--text); border-color: #555; }
+
+  /* EXERCISE CARDS */
+  .exercises-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .exercise-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .exercise-header {
+    display: flex;
+    align-items: center;
+    padding: 14px 18px;
+    gap: 14px;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .exercise-header:hover { background: var(--surface2); }
+
+  .ex-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 24px;
+    color: var(--accent);
+    min-width: 32px;
+    line-height: 1;
+  }
+
+  .emom-view .ex-num { color: var(--accent2); }
+  .mobility-view .ex-num { color: #7b9fff; }
+
+  .ex-info { flex: 1; }
+
+  .ex-name {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+
+  .ex-meta {
+    font-size: 12px;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+  }
+
+  .ex-ref {
+    font-size: 11px;
+    color: #5a5a5a;
+    text-align: right;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .ex-ref a {
+    color: #5a8aff;
+    text-decoration: none;
+  }
+
+  .ex-ref a:hover { text-decoration: underline; }
+
+  /* SETS TRACKER */
+  .sets-tracker {
+    padding: 16px 18px;
+    border-top: 1px solid var(--border);
+    background: var(--surface2);
+    display: none;
+  }
+
+  .sets-tracker.open { display: block; }
+
+  .sets-row {
+    display: grid;
+    grid-template-columns: 50px 1fr 1fr 1fr 80px;
+    gap: 8px;
+    align-items: center;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .sets-row:last-child { border-bottom: none; }
+
+  .sets-row-header {
+    font-size: 10px;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding-bottom: 8px;
+  }
+
+  .set-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .set-input {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    width: 100%;
+    text-align: center;
+    transition: border-color 0.15s;
+  }
+
+  .set-input:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+
+  .emom-view .set-input:focus { border-color: var(--accent2); }
+
+  .set-done {
+    display: flex;
+    justify-content: center;
+  }
+
+  .check-btn {
+    width: 28px; height: 28px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+    font-size: 14px;
+  }
+
+  .check-btn.done {
+    background: var(--success);
+    border-color: var(--success);
+  }
+
+  .progression-tip {
+    margin-top: 14px;
+    padding: 10px 14px;
+    background: #0a1a0a;
+    border-left: 3px solid var(--success);
+    border-radius: 0 4px 4px 0;
+    font-size: 11px;
+    color: #aaa;
+    line-height: 1.5;
+  }
+
+  .progression-tip strong { color: var(--success); }
+
+  /* MOBILITY */
+  .mobility-card {
+    background: #0e1220;
+    border: 1px solid #1e2a45;
+    border-radius: 8px;
+    padding: 18px;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+
+  .mob-icon {
+    font-size: 28px;
+    min-width: 40px;
+    text-align: center;
+    margin-top: 2px;
+  }
+
+  .mob-name {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  .mob-detail {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.5;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .mob-ref { margin-top: 6px; }
+
+  /* WEEKLY SUMMARY */
+  .summary-bar {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px 24px;
+    margin-bottom: 28px;
+    display: flex;
+    gap: 32px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .stat {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .stat-val {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px;
+    color: var(--accent);
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .stat-divider {
+    width: 1px;
+    height: 40px;
+    background: var(--border);
+  }
+
+  /* NOTES */
+  .notes-area {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    padding: 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    resize: vertical;
+    min-height: 70px;
+    margin-top: 14px;
+    transition: border-color 0.15s;
+  }
+
+  .notes-area:focus { outline: none; border-color: var(--accent); }
+
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 16px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    margin-bottom: 12px;
+    margin-top: 24px;
+  }
+
+  /* TOAST */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--success);
+    color: #000;
+    padding: 12px 20px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    transform: translateY(80px);
+    opacity: 0;
+    transition: all 0.3s;
+    z-index: 999;
+  }
+
+  .toast.show { transform: translateY(0); opacity: 1; }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    .overview-grid { grid-template-columns: repeat(3, 1fr); }
+    .sets-row { grid-template-columns: 40px 1fr 1fr 1fr 50px; }
+    .timer-number { font-size: 60px; }
+  }
+
+  @media (max-width: 500px) {
+    .overview-grid { grid-template-columns: repeat(2, 1fr); }
+    header { padding: 14px 16px; }
+    .container { padding: 20px 14px; }
+  }
+
+  .chevron {
+    transition: transform 0.2s;
+    color: var(--muted);
+    font-size: 12px;
+  }
+
+  .chevron.open { transform: rotate(180deg); }
+
+  .emom-rounds {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 16px;
+  }
+
+  .round-dot {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-family: 'DM Mono', monospace;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .round-dot.done {
+    background: var(--accent2);
+    border-color: var(--accent2);
+    color: #000;
+    font-weight: 700;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">IRON<span>KB</span></div>
+  <div class="week-nav">
+    <button onclick="changeWeek(-1)">◀ PREV</button>
+    <div class="week-label" id="weekLabel">WEEK 1</div>
+    <button onclick="changeWeek(1)">NEXT ▶</button>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- SUMMARY BAR -->
+  <div class="summary-bar" id="summaryBar">
+    <div class="stat">
+      <div class="stat-val" id="statSets">0</div>
+      <div class="stat-label">Sets Done</div>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat">
+      <div class="stat-val" id="statRounds">0</div>
+      <div class="stat-label">EMOM Rounds</div>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat">
+      <div class="stat-val" id="statDays">0/5</div>
+      <div class="stat-label">Days Trained</div>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat">
+      <div class="stat-val" id="statVol">0</div>
+      <div class="stat-label">Total Reps</div>
+    </div>
+  </div>
+
+  <!-- DAY SELECTOR -->
+  <div class="overview-grid" id="dayGrid"></div>
+
+  <!-- WORKOUT VIEW -->
+  <div id="workoutView"></div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── DATA ──────────────────────────────────────────────────────────────────
+
+const PROGRAM = {
+  days: [
+    {
+      id: 'D1',
+      label: 'Day 1',
+      type: 'strength',
+      focus: 'Lower Body + Hinge',
+      color: 'strength',
+      exercises: [
+        {
+          name: 'Double KB Deadlift',
+          sets: 4, reps: '6', rest: '90s',
+          cue: 'Hip hinge, flat back, drive floor away',
+          ref: { text: 'StrongFirst Deadlift Guide', url: 'https://www.strongfirst.com/the-kettlebell-deadlift/' },
+          progression: 'Add 2kg when you complete all 4×6 with clean form. Reduce to 4×4 if form breaks.'
+        },
+        {
+          name: 'KB Goblet Squat',
+          sets: 4, reps: '8', rest: '75s',
+          cue: 'Chest up, knees track toes, full depth',
+          ref: { text: 'Dan John – Goblet Squat', url: 'https://www.t-nation.com/training/goblet-squat/' },
+          progression: 'Progress weight when 4×8 feels controlled. Drop to 4×6 with heavier bell.'
+        },
+        {
+          name: 'KB Single-Leg RDL',
+          sets: 3, reps: '8 each', rest: '60s',
+          cue: 'Hinge back, keep hips square, soft knee',
+          ref: { text: 'Kettlebell Kings – Single Leg RDL', url: 'https://www.kettlebellkings.com/blogs/news/kettlebell-single-leg-romanian-deadlift' },
+          progression: 'Master balance first. Add weight only when hip stays square for all reps.'
+        },
+        {
+          name: 'KB Swing (2-Hand)',
+          sets: 4, reps: '15', rest: '60s',
+          cue: 'Hip snap, not squat — hike, hinge, drive',
+          ref: { text: 'StrongFirst Swing Tutorial', url: 'https://www.strongfirst.com/the-swing/' },
+          progression: 'Progress to 4×20 before adding weight. If reps drop below 12, reduce load.'
+        }
+      ]
+    },
+    {
+      id: 'D2',
+      label: 'Day 2',
+      type: 'emom',
+      focus: 'Cardio EMOM — Full Body',
+      color: 'emom',
+      emomMinutes: 20,
+      emomInterval: 60,
+      exercises: [
+        {
+          name: 'KB Swing (every odd minute)',
+          sets: 1, reps: '15', rest: 'rest of minute',
+          cue: 'Explosive hip hinge. Bell to shoulder height. Breathe behind shield.',
+          ref: { text: 'StrongFirst EMOM Programming', url: 'https://www.strongfirst.com/emom-training/' },
+          progression: 'Increase to 18 swings/min after 3 weeks. If HR stays >85% max, reduce to 12.'
+        },
+        {
+          name: 'KB Clean + Press (every even minute)',
+          sets: 1, reps: '5 each side', rest: 'rest of minute',
+          cue: 'Clean to rack, press vertical, lock out overhead',
+          ref: { text: 'StrongFirst Clean & Press', url: 'https://www.strongfirst.com/the-press/' },
+          progression: 'Add 1 rep per side after 4 sessions. Reduce weight 10% if unable to finish in 45s.'
+        }
+      ],
+      totalRounds: 20
+    },
+    {
+      id: 'D3',
+      label: 'Day 3',
+      type: 'strength',
+      focus: 'Upper Body + Core',
+      color: 'strength',
+      exercises: [
+        {
+          name: 'KB Floor Press',
+          sets: 4, reps: '8', rest: '90s',
+          cue: 'Neutral wrist, pack shoulders, control descent',
+          ref: { text: 'Onnit – KB Floor Press', url: 'https://www.onnit.com/academy/kettlebell-floor-press/' },
+          progression: 'Progress to 4×10 before increasing weight. Use 2 KBs for even load.'
+        },
+        {
+          name: 'KB Bent-Over Row',
+          sets: 4, reps: '8 each', rest: '75s',
+          cue: 'Flat back, drive elbow back, pause at hip',
+          ref: { text: 'Kettlebell Kings – Row Guide', url: 'https://www.kettlebellkings.com/blogs/news/kettlebell-bent-over-row' },
+          progression: 'Increase weight when 4×8 is smooth. Never round lower back — form first.'
+        },
+        {
+          name: 'KB Overhead Press',
+          sets: 3, reps: '6 each', rest: '90s',
+          cue: 'Rack position → vertical press → full lockout',
+          ref: { text: 'StrongFirst Press Guide', url: 'https://www.strongfirst.com/the-press/' },
+          progression: 'Build to 3×8 before stepping up weight. Reduce rest to 60s for conditioning.'
+        },
+        {
+          name: 'KB Windmill',
+          sets: 3, reps: '5 each', rest: '60s',
+          cue: 'Bell overhead, eyes on bell, hinge — not side bend',
+          ref: { text: 'StrongFirst Windmill', url: 'https://www.strongfirst.com/the-windmill/' },
+          progression: 'Mobility drill — prioritize depth over load. Add weight slowly, never rush.'
+        }
+      ]
+    },
+    {
+      id: 'D4',
+      label: 'Day 4',
+      type: 'emom',
+      focus: 'EMOM — Power + Conditioning',
+      color: 'emom',
+      emomMinutes: 24,
+      emomInterval: 60,
+      exercises: [
+        {
+          name: 'KB Snatch (min 1, 4, 7…)',
+          sets: 1, reps: '5 each side', rest: 'rest of minute',
+          cue: 'High pull, punch through at top, hike back between legs',
+          ref: { text: 'StrongFirst Snatch Tutorial', url: 'https://www.strongfirst.com/the-snatch/' },
+          progression: 'Start with lighter bell to perfect punch-through. Add reps before weight.'
+        },
+        {
+          name: 'KB Goblet Squat (min 2, 5, 8…)',
+          sets: 1, reps: '10', rest: 'rest of minute',
+          cue: 'Controlled descent, pause at bottom, drive up',
+          ref: { text: 'Dan John – Goblet Squat', url: 'https://www.t-nation.com/training/goblet-squat/' },
+          progression: 'Increase to 12 reps after 3 solid sessions. Add weight at 12 reps.'
+        },
+        {
+          name: 'KB Renegade Row (min 3, 6, 9…)',
+          sets: 1, reps: '5 each side', rest: 'rest of minute',
+          cue: 'Plank tight, rotate minimal, pull to hip',
+          ref: { text: 'Onnit – Renegade Row', url: 'https://www.onnit.com/academy/kettlebell-renegade-row/' },
+          progression: 'Use two same-weight KBs. Reduce weight if hips rock. Build to 8/side.'
+        }
+      ],
+      totalRounds: 24
+    },
+    {
+      id: 'D5',
+      label: 'Day 5',
+      type: 'mobility',
+      focus: 'Mobility + Active Recovery',
+      color: 'mobility',
+      exercises: [
+        {
+          name: 'KB Arm Bar',
+          icon: '🔄',
+          detail: '3 × 45s each side — Shoulder packing, thoracic rotation',
+          ref: { text: 'StrongFirst Arm Bar', url: 'https://www.strongfirst.com/the-arm-bar/' }
+        },
+        {
+          name: 'Bretzel Stretch',
+          icon: '🌀',
+          detail: '3 × 30s each side — Thoracic mobility + hip flexor',
+          ref: { text: 'FMS Bretzel', url: 'https://www.functionalmovement.com/articles/1102' }
+        },
+        {
+          name: 'KB Halo',
+          icon: '⭕',
+          detail: '3 × 8 each direction — Shoulder girdle, neck, upper back',
+          ref: { text: 'StrongFirst Halo', url: 'https://www.strongfirst.com/the-halo/' }
+        },
+        {
+          name: '90/90 Hip Rotations',
+          icon: '🦵',
+          detail: '3 × 8 transitions — Hip internal/external rotation',
+          ref: { text: 'Original Strength – Hip Flow', url: 'https://originalstrength.net/' }
+        },
+        {
+          name: 'KB Turkish Get-Up (light)',
+          icon: '⬆️',
+          detail: '3 × 1 each side, slow — Full-body mobility, stability, coordination',
+          ref: { text: 'StrongFirst TGU Guide', url: 'https://www.strongfirst.com/the-turkish-get-up/' }
+        },
+        {
+          name: 'Dead Bug',
+          icon: '🐛',
+          detail: '3 × 8 each side — Deep core activation, spine neutral',
+          ref: { text: 'Precision Movement – Dead Bug', url: 'https://www.precisionmovement.coach/dead-bug-exercise/' }
+        }
+      ]
+    }
+  ]
+};
+
+// ─── STATE ─────────────────────────────────────────────────────────────────
+let currentWeek = 1;
+let activeDay = null;
+let timerInterval = null;
+let timerSeconds = 0;
+let timerRunning = false;
+let timerTotal = 60;
+let currentRound = 0;
+let totalRounds = 20;
+
+function storageKey(k) { return `ironkb_w${currentWeek}_${k}`; }
+function save(k, v) { try { localStorage.setItem(storageKey(k), JSON.stringify(v)); } catch(e){} }
+function load(k, def) { try { const v = localStorage.getItem(storageKey(k)); return v ? JSON.parse(v) : def; } catch(e){ return def; } }
+
+// ─── INIT ───────────────────────────────────────────────────────────────────
+function init() {
+  renderDayGrid();
+  updateSummary();
+  const lastDay = load('activeDay', null);
+  if (lastDay) {
+    const day = PROGRAM.days.find(d => d.id === lastDay);
+    if (day) showWorkout(day);
+  }
+}
+
+// ─── DAY GRID ───────────────────────────────────────────────────────────────
+function renderDayGrid() {
+  const grid = document.getElementById('dayGrid');
+  grid.innerHTML = PROGRAM.days.map(day => {
+    const done = load(`day_done_${day.id}`, false);
+    return `
+      <div class="day-card ${day.color} ${activeDay === day.id ? (day.type === 'emom' ? 'active emom-active' : day.type === 'mobility' ? 'active mobility-active' : 'active') : ''}"
+           onclick="showWorkout(PROGRAM.days.find(d=>d.id==='${day.id}'))">
+        <div class="day-label">${day.label}</div>
+        <div class="day-type">${day.type.toUpperCase()}</div>
+        <div class="day-focus">${day.focus}</div>
+        ${done ? '<div style="margin-top:8px;font-size:11px;color:var(--success)">✓ COMPLETE</div>' : ''}
+      </div>`;
+  }).join('');
+}
+
+// ─── WORKOUT VIEW ───────────────────────────────────────────────────────────
+function showWorkout(day) {
+  stopTimer();
+  activeDay = day.id;
+  save('activeDay', day.id);
+  renderDayGrid();
+
+  const view = document.getElementById('workoutView');
+
+  if (day.type === 'strength') {
+    view.innerHTML = renderStrengthDay(day);
+    view.className = '';
+  } else if (day.type === 'emom') {
+    view.innerHTML = renderEmomDay(day);
+    view.className = 'emom-view';
+    initTimer(day);
+  } else if (day.type === 'mobility') {
+    view.innerHTML = renderMobilityDay(day);
+    view.className = 'mobility-view';
+  }
+}
+
+// ─── STRENGTH DAY ───────────────────────────────────────────────────────────
+function renderStrengthDay(day) {
+  const notesKey = `notes_${day.id}`;
+  const notes = load(notesKey, '');
+  return `
+    <div class="workout-header">
+      <div>
+        <div class="workout-title">${day.label}: <span>${day.focus}</span></div>
+      </div>
+      <div class="workout-meta">
+        <div><strong>${day.exercises.length}</strong> exercises</div>
+        <div><strong>~50-60</strong> min</div>
+      </div>
+    </div>
+    <div class="exercises-grid" id="exGrid">
+      ${day.exercises.map((ex, i) => renderExerciseCard(ex, i, day.id)).join('')}
+    </div>
+    <div class="section-title">SESSION NOTES</div>
+    <textarea class="notes-area" placeholder="How did it feel? Any PRs? Notes for next time…"
+      onchange="save('${notesKey}', this.value)">${notes}</textarea>
+    <div style="margin-top:20px;text-align:right">
+      <button class="btn-primary" style="background:var(--success)" onclick="markDayDone('${day.id}')">✓ MARK COMPLETE</button>
+    </div>`;
+}
+
+function renderExerciseCard(ex, idx, dayId) {
+  const key = `${dayId}_ex${idx}`;
+  const setsData = load(`sets_${key}`, Array.from({length: ex.sets}, () => ({weight:'', reps:'', done: false})));
+  const open = load(`open_${key}`, false);
+
+  const rows = setsData.map((s, si) => `
+    <div class="sets-row">
+      <div class="set-label">SET ${si+1}</div>
+      <input class="set-input" type="number" placeholder="kg" value="${s.weight||''}"
+        onchange="updateSet('${key}',${si},'weight',this.value)" />
+      <input class="set-input" type="number" placeholder="${ex.reps}" value="${s.reps||''}"
+        onchange="updateSet('${key}',${si},'reps',this.value)" />
+      <input class="set-input" type="text" placeholder="${ex.rest}" value="${s.rest||''}"
+        onchange="updateSet('${key}',${si},'rest',this.value)" style="font-size:11px" />
+      <div class="set-done">
+        <div class="check-btn ${s.done ? 'done' : ''}" onclick="toggleSetDone('${key}',${si})">${s.done ? '✓' : ''}</div>
+      </div>
+    </div>`).join('');
+
+  return `
+    <div class="exercise-card" id="card_${key}">
+      <div class="exercise-header" onclick="toggleCard('${key}')">
+        <div class="ex-num">${idx+1}</div>
+        <div class="ex-info">
+          <div class="ex-name">${ex.name}</div>
+          <div class="ex-meta">${ex.sets} sets × ${ex.reps} reps · Rest ${ex.rest} · <em style="color:#666">${ex.cue}</em></div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+          <div class="ex-ref"><a href="${ex.ref.url}" target="_blank">📎 ${ex.ref.text}</a></div>
+          <span class="chevron ${open ? 'open' : ''}" id="chev_${key}">▼</span>
+        </div>
+      </div>
+      <div class="sets-tracker ${open ? 'open' : ''}" id="tracker_${key}">
+        <div class="sets-row sets-row-header">
+          <div></div><div>WEIGHT (kg)</div><div>REPS</div><div>REST</div><div>DONE</div>
+        </div>
+        ${rows}
+        <div class="progression-tip">
+          <strong>📈 PROGRESSION:</strong> ${ex.progression}
+        </div>
+      </div>
+    </div>`;
+}
+
+function toggleCard(key) {
+  const tracker = document.getElementById(`tracker_${key}`);
+  const chev = document.getElementById(`chev_${key}`);
+  const isOpen = tracker.classList.toggle('open');
+  chev.classList.toggle('open', isOpen);
+  save(`open_${key}`, isOpen);
+}
+
+function updateSet(key, si, field, val) {
+  const data = load(`sets_${key}`, []);
+  if (!data[si]) data[si] = {};
+  data[si][field] = val;
+  save(`sets_${key}`, data);
+  updateSummary();
+}
+
+function toggleSetDone(key, si) {
+  const data = load(`sets_${key}`, []);
+  if (!data[si]) data[si] = {};
+  data[si].done = !data[si].done;
+  save(`sets_${key}`, data);
+  const btn = document.querySelector(`#card_${key} .sets-row:nth-child(${si+2}) .check-btn`);
+  if (btn) {
+    btn.classList.toggle('done', data[si].done);
+    btn.textContent = data[si].done ? '✓' : '';
+  }
+  updateSummary();
+  if (data[si].done) showToast('Set logged ✓');
+}
+
+// ─── EMOM DAY ───────────────────────────────────────────────────────────────
+function renderEmomDay(day) {
+  const rounds = load(`emom_rounds_${day.id}`, 0);
+  const dots = Array.from({length: day.totalRounds}, (_,i) => `
+    <div class="round-dot ${i < rounds ? 'done' : ''}" id="dot_${day.id}_${i}" onclick="toggleRound('${day.id}',${i})">${i+1}</div>
+  `).join('');
+
+  return `
+    <div class="workout-header">
+      <div>
+        <div class="workout-title emom-title">Day ${day.id.slice(1)}: <span>${day.focus}</span></div>
+      </div>
+      <div class="workout-meta">
+        <div><strong>${day.emomMinutes}</strong> minutes</div>
+        <div><strong>1 min</strong> intervals</div>
+      </div>
+    </div>
+
+    <div class="emom-container">
+      <div class="emom-header">
+        <span class="emom-badge">EMOM × ${day.emomMinutes}</span>
+        <span class="emom-info">Every Minute On the Minute</span>
+      </div>
+
+      <div class="timer-display">
+        <div class="timer-number" id="timerNum">60</div>
+        <div class="timer-progress"><div class="timer-bar" id="timerBar"></div></div>
+        <div class="timer-status" id="timerStatus">READY — PRESS START</div>
+      </div>
+
+      <div class="emom-rounds" id="roundDots">${dots}</div>
+
+      <div class="timer-controls">
+        <button class="btn-primary" id="timerBtn" onclick="toggleTimer('${day.id}')">START</button>
+        <button class="btn-secondary" onclick="resetTimer('${day.id}')">RESET</button>
+      </div>
+    </div>
+
+    <div class="section-title">EXERCISES — ALTERNATING MINUTES</div>
+    <div class="exercises-grid">
+      ${day.exercises.map((ex, i) => `
+        <div class="exercise-card">
+          <div class="exercise-header" style="cursor:default">
+            <div class="ex-num">${i+1}</div>
+            <div class="ex-info">
+              <div class="ex-name">${ex.name}</div>
+              <div class="ex-meta">${ex.reps} · Rest = remainder of minute · <em style="color:#666">${ex.cue}</em></div>
+            </div>
+            <div class="ex-ref"><a href="${ex.ref.url}" target="_blank">📎 ${ex.ref.text}</a></div>
+          </div>
+          <div class="sets-tracker open" style="padding:12px 18px">
+            <div class="progression-tip">
+              <strong>📈 PROGRESSION:</strong> ${ex.progression}
+            </div>
+          </div>
+        </div>`).join('')}
+    </div>
+    <div style="margin-top:20px;text-align:right">
+      <button class="btn-primary" style="background:var(--success)" onclick="markDayDone('${day.id}')">✓ MARK COMPLETE</button>
+    </div>`;
+}
+
+// ─── TIMER ──────────────────────────────────────────────────────────────────
+function initTimer(day) {
+  timerSeconds = 60;
+  timerTotal = 60;
+  timerRunning = false;
+  currentRound = load(`emom_rounds_${day.id}`, 0);
+  totalRounds = day.totalRounds;
+  updateTimerUI();
+}
+
+function toggleTimer(dayId) {
+  if (timerRunning) { pauseTimer(); } else { startTimer(dayId); }
+}
+
+function startTimer(dayId) {
+  timerRunning = true;
+  document.getElementById('timerBtn').textContent = 'PAUSE';
+  timerInterval = setInterval(() => {
+    timerSeconds--;
+    if (timerSeconds <= 0) {
+      timerSeconds = 60;
+      currentRound++;
+      save(`emom_rounds_${dayId}`, currentRound);
+      refreshRoundDots(dayId);
+      if (currentRound >= totalRounds) {
+        stopTimer();
+        document.getElementById('timerStatus').textContent = '🔥 EMOM COMPLETE!';
+        markDayDone(dayId);
+        return;
+      }
+      updateSummary();
+    }
+    updateTimerUI();
+  }, 1000);
+}
+
+function pauseTimer() {
+  timerRunning = false;
+  clearInterval(timerInterval);
+  document.getElementById('timerBtn') && (document.getElementById('timerBtn').textContent = 'RESUME');
+  document.getElementById('timerStatus') && (document.getElementById('timerStatus').textContent = 'PAUSED');
+}
+
+function stopTimer() {
+  timerRunning = false;
+  clearInterval(timerInterval);
+}
+
+function resetTimer(dayId) {
+  stopTimer();
+  timerSeconds = 60;
+  currentRound = 0;
+  save(`emom_rounds_${dayId}`, 0);
+  refreshRoundDots(dayId);
+  updateTimerUI();
+  document.getElementById('timerBtn') && (document.getElementById('timerBtn').textContent = 'START');
+  document.getElementById('timerStatus') && (document.getElementById('timerStatus').textContent = 'READY — PRESS START');
+}
+
+function updateTimerUI() {
+  const el = document.getElementById('timerNum');
+  const bar = document.getElementById('timerBar');
+  const status = document.getElementById('timerStatus');
+  if (!el) return;
+  el.textContent = String(timerSeconds).padStart(2,'0');
+  if (bar) bar.style.width = `${(timerSeconds / timerTotal) * 100}%`;
+  if (status && timerRunning) {
+    const minIdx = currentRound % 2;
+    status.textContent = `ROUND ${currentRound+1} — ${minIdx === 0 ? 'SWINGS' : 'CLEAN + PRESS'}`;
+  }
+}
+
+function toggleRound(dayId, idx) {
+  const rounds = load(`emom_rounds_${dayId}`, 0);
+  const newRounds = idx < rounds ? idx : idx + 1;
+  save(`emom_rounds_${dayId}`, newRounds);
+  currentRound = newRounds;
+  refreshRoundDots(dayId);
+  updateSummary();
+}
+
+function refreshRoundDots(dayId) {
+  const rounds = load(`emom_rounds_${dayId}`, 0);
+  document.querySelectorAll(`[id^="dot_${dayId}_"]`).forEach((dot, i) => {
+    dot.classList.toggle('done', i < rounds);
+  });
+}
+
+// ─── MOBILITY DAY ───────────────────────────────────────────────────────────
+function renderMobilityDay(day) {
+  return `
+    <div class="workout-header">
+      <div>
+        <div class="workout-title mobility-title">${day.label}: <span>${day.focus}</span></div>
+      </div>
+      <div class="workout-meta">
+        <div><strong>~35-40</strong> min</div>
+        <div><strong>Low</strong> intensity</div>
+      </div>
+    </div>
+    <div style="background:#0e1a0e;border:1px solid #1e3a1e;border-radius:8px;padding:14px 18px;margin-bottom:20px;font-size:13px;color:#aaa;line-height:1.6">
+      💡 <strong style="color:#7b9fff">Recovery Day</strong> — Move gently, breathe through restrictions, never force range. 
+      These movements are <em>investments in your joints</em> for the next strength session.
+    </div>
+    <div class="exercises-grid">
+      ${day.exercises.map(ex => `
+        <div class="mobility-card">
+          <div class="mob-icon">${ex.icon}</div>
+          <div>
+            <div class="mob-name">${ex.name}</div>
+            <div class="mob-detail">${ex.detail}</div>
+            <div class="mob-ref ex-ref"><a href="${ex.ref.url}" target="_blank">📎 ${ex.ref.text}</a></div>
+          </div>
+        </div>`).join('')}
+    </div>
+    <div style="margin-top:20px;text-align:right">
+      <button class="btn-primary" style="background:var(--success)" onclick="markDayDone('${day.id}')">✓ MARK COMPLETE</button>
+    </div>`;
+}
+
+// ─── SUMMARY ────────────────────────────────────────────────────────────────
+function updateSummary() {
+  let sets = 0, reps = 0, rounds = 0, days = 0;
+  PROGRAM.days.forEach(day => {
+    if (load(`day_done_${day.id}`, false)) days++;
+    if (day.type === 'emom') {
+      rounds += load(`emom_rounds_${day.id}`, 0);
+    } else if (day.type === 'strength') {
+      day.exercises.forEach((ex, i) => {
+        const key = `${day.id}_ex${i}`;
+        const data = load(`sets_${key}`, []);
+        data.forEach(s => {
+          if (s.done) { sets++; reps += parseInt(s.reps || ex.reps) || 0; }
+        });
+      });
+    }
+  });
+  document.getElementById('statSets').textContent = sets;
+  document.getElementById('statRounds').textContent = rounds;
+  document.getElementById('statDays').textContent = `${days}/5`;
+  document.getElementById('statVol').textContent = reps;
+}
+
+// ─── HELPERS ────────────────────────────────────────────────────────────────
+function markDayDone(dayId) {
+  save(`day_done_${dayId}`, true);
+  renderDayGrid();
+  updateSummary();
+  showToast('Day complete! 🔥');
+}
+
+function changeWeek(dir) {
+  currentWeek = Math.max(1, currentWeek + dir);
+  document.getElementById('weekLabel').textContent = `WEEK ${currentWeek}`;
+  stopTimer();
+  activeDay = null;
+  document.getElementById('workoutView').innerHTML = '';
+  renderDayGrid();
+  updateSummary();
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ─── START ──────────────────────────────────────────────────────────────────
+init();
+</script>
+</body>
+</html>
